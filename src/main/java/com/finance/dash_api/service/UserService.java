@@ -1,8 +1,10 @@
 package com.finance.dash_api.service;
 
+import com.finance.dash_api.POJO.ExceptionPOJO;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,51 +20,60 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(User user) {
-        log.info(user.getEmail() + " " + user.getName() + " " + user.getRole() + " " + user.getPassword());
-        return userRepository.save(user);
+    public boolean createUser(User user) {
+        //null
+        //validation
+        //check for existing
+        if (user.getName().equals("")) throw new ExceptionPOJO("Failed", "user can't be null", HttpStatus.BAD_REQUEST);
+
+        User newUser = userRepository.save(user);
+
+        if (user.equals(newUser)) {
+            return true;
+        }
+        return false;
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(int page, int size) {
         return userRepository.findAll();
     }
 
-    public User delUser(UUID id) {
-        log.info(String.valueOf(id));
+    public boolean delUser(UUID id) {
 
-        User user = userRepository.findById(id).get();
-        log.info(user.getEmail() + " " + user.getName() + " " + user.getRole() + " " + user.getPassword());
-
-        if (user != null) {
+        User user;
+        if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
+            return true;
         }
 
-        return user;
+        return false;
     }
 
-    public User updateUser(UUID id, User newUserDetail) {
+    public boolean updateUser(UUID id, User newUserDetail) {
         log.info(String.valueOf(id));
         //validation id = newUserDetail.id
         //validation notnull
-        User existingUserDetail = userRepository.findById(id).get();
-        if (existingUserDetail != null) {
-
-            if (newUserDetail.getPassword() != null && newUserDetail.getPassword() != existingUserDetail.getPassword()) {
+        User existingUserDetail;
+        if (userRepository.findById(id).isPresent()) {
+            existingUserDetail = userRepository.findById(id).get();
+            if (newUserDetail.getPassword() != null && !(newUserDetail.getPassword().equals(existingUserDetail.getPassword()))) {
                 existingUserDetail.setPassword(newUserDetail.getPassword());
             }
-            if (newUserDetail.getRole() != null && newUserDetail.getRole().equals(newUserDetail.getRole())) {
+            if (newUserDetail.getRole() != null && !(newUserDetail.getRole().equals(existingUserDetail.getRole()))) {
+                log.info(";rioo;");
                 existingUserDetail.setRole(newUserDetail.getRole());
             }
             if (newUserDetail.isActive() != existingUserDetail.isActive()) {
                 existingUserDetail.setActive(newUserDetail.isActive());
             }
 
-            return userRepository.save(existingUserDetail);
+            User user = userRepository.save(existingUserDetail);
+
+            return true;
         }
 
-        return userRepository.save(existingUserDetail);
+        return false;
 
     }
-
 
 }

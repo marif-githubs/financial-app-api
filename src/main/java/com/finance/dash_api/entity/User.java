@@ -1,6 +1,7 @@
 package com.finance.dash_api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -19,9 +20,11 @@ public class User {
     @UuidGenerator(style = UuidGenerator.Style.RANDOM )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-
+    @NotNull
     private String name;
+    @NotNull
     private String email;
+    @NotNull
     private String password;
 
     @Enumerated(EnumType.STRING)

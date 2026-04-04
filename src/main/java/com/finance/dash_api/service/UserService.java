@@ -1,16 +1,14 @@
 package com.finance.dash_api.service;
 
-import com.finance.dash_api.POJO.ExceptionPOJO;
+import com.finance.dash_api.POJO.CustomException;
 import com.finance.dash_api.entity.User;
-import com.finance.dash_api.repo.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.finance.dash_api.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class UserService {
 
@@ -20,60 +18,107 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean createUser(User user) {
-        //null
-        //validation
-        //check for existing
-        if (user.getName().equals("")) throw new ExceptionPOJO("Failed", "user can't be null", HttpStatus.BAD_REQUEST);
+    public UUID createUser(User user) {
 
-        User newUser = userRepository.save(user);
+        User newUser;
 
-        if (user.equals(newUser)) {
-            return true;
+        try {
+            //check if user already exist
+            newUser = userRepository.save(user);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return false;
+
+        return newUser.getId();
     }
 
+    //need to fix pagination
     public List<User> getAllUsers(int page, int size) {
         return userRepository.findAll();
     }
 
-    public boolean delUser(UUID id) {
+    public UUID deleteUser(UUID id) {
 
-        User user;
-        if (userRepository.findById(id).isPresent()) {
+        if (id.toString().isBlank())
+            throw new CustomException("Enter Valid User Id", HttpStatus.BAD_REQUEST);
+
+        userRepository.findById(id)
+                .orElseThrow(() ->
+                        new CustomException("User not found", HttpStatus.NOT_FOUND));
+        try {
+
             userRepository.deleteById(id);
-            return true;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        return false;
+        return id;
+
     }
 
-    public boolean updateUser(UUID id, User newUserDetail) {
-        log.info(String.valueOf(id));
-        //validation id = newUserDetail.id
-        //validation notnull
-        User existingUserDetail;
-        if (userRepository.findById(id).isPresent()) {
-            existingUserDetail = userRepository.findById(id).get();
+    public User updateUser(UUID id, User newUserDetail) {
+
+        User user;
+        User existingUserDetail = userRepository.findById(id).
+                orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
+        try {
+
             if (newUserDetail.getPassword() != null && !(newUserDetail.getPassword().equals(existingUserDetail.getPassword()))) {
                 existingUserDetail.setPassword(newUserDetail.getPassword());
             }
             if (newUserDetail.getRole() != null && !(newUserDetail.getRole().equals(existingUserDetail.getRole()))) {
-                log.info(";rioo;");
                 existingUserDetail.setRole(newUserDetail.getRole());
             }
             if (newUserDetail.isActive() != existingUserDetail.isActive()) {
                 existingUserDetail.setActive(newUserDetail.isActive());
             }
 
-            User user = userRepository.save(existingUserDetail);
+            user = userRepository.save(existingUserDetail);
 
-            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        return false;
+        return user;
+    }
 
+    public User activateUser(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
+        user.setActive(true);
+
+        try {
+
+            userRepository.save(user);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return user;
+    }
+
+    public User deactivateUser(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
+        user.setActive(false);
+
+        try {
+
+            userRepository.save(user);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return user;
     }
 
 }

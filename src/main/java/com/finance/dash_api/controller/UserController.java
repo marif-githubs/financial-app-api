@@ -1,5 +1,6 @@
 package com.finance.dash_api.controller;
 
+import com.finance.dash_api.POJO.UserIdPOJO;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.service.UserService;
 import com.finance.dash_api.POJO.ResponseEntityPOJO;
@@ -25,18 +26,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseEntityPOJO<Void>> createUser(@Valid @RequestBody User user) {
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public ResponseEntityPOJO<UserIdPOJO> createUser(@Valid @RequestBody User user) {
 
-        boolean created = userService.createUser(user);
+        UUID createdUserId = userService.createUser(user);
 
-        if (created) {
-            //send user id on success.
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseEntityPOJO<>("Success", "Resource Created", null));
-        }
+        return new ResponseEntityPOJO<>("Success", "Resource Created", new UserIdPOJO(createdUserId));
 
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ResponseEntityPOJO<>("Failure", "Provide valid User detail", null));
     }
 
     @GetMapping
@@ -55,28 +51,41 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseEntityPOJO<Object>> deleteUser(@PathVariable UUID id) {
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntityPOJO<UserIdPOJO> deleteUser(@PathVariable UUID id) {
 
-        boolean deleted = userService.delUser(id);
+        UUID deleteUserId = userService.deleteUser(id);
 
-        if(deleted){
-            return ResponseEntity.ok(new ResponseEntityPOJO<>("Success", "User Deleted", null));
-        }
+        return new ResponseEntityPOJO<>("Success", "User Deleted", new UserIdPOJO(deleteUserId));
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseEntityPOJO<>("Failed", "User Not Found", null));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseEntityPOJO<Object>> updateUser(@RequestBody User user, @PathVariable UUID id) {
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntityPOJO<User> updateUser(@RequestBody User user, @PathVariable UUID id) {
 
-        boolean updated = userService.updateUser(id, user);
+        User updatedUserDetail = userService.updateUser(id, user);
 
-        if (updated) {
+        return  new ResponseEntityPOJO<>("Success", "User Detail Updated", updatedUserDetail);
 
-            return ResponseEntity.ok(new ResponseEntityPOJO<>("Success", "User Detail Updated", null));
+    }
 
-        }
-        return ResponseEntity.ok(new ResponseEntityPOJO<>("Failed", "Provide valid User detail", null));
+    @PatchMapping("/{id}/activate")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntityPOJO<UserIdPOJO> activate(@PathVariable UUID id) {
+
+        User user = userService.activateUser(id);
+
+        return new ResponseEntityPOJO<>("Success", "User:"+user.getName()+" Profile Activated", new UserIdPOJO(id));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntityPOJO<UserIdPOJO> deactivate(@PathVariable UUID id) {
+
+        User user = userService.deactivateUser(id);
+
+        return new ResponseEntityPOJO<>("Success", user.getName()+" Profile Deactivated", new UserIdPOJO(id));
     }
 }
+

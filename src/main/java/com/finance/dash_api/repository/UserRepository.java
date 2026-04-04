@@ -1,4 +1,4 @@
-package com.finance.dash_api.repo;
+package com.finance.dash_api.repository;
 
 import com.finance.dash_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

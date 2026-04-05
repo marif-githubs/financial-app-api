@@ -1,9 +1,9 @@
 package com.finance.dash_api.controller;
 
-import com.finance.dash_api.POJO.UserIdPOJO;
+import com.finance.dash_api.POJO.UserId;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.service.UserService;
-import com.finance.dash_api.POJO.ResponseEntityPOJO;
+import com.finance.dash_api.POJO.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -27,65 +27,65 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntityPOJO<UserIdPOJO> createUser(@Valid @RequestBody User user) {
+    public ApiResponse<UserId> createUser(@Valid @RequestBody User user) {
 
         UUID createdUserId = userService.createUser(user);
 
-        return new ResponseEntityPOJO<>("Success", "Resource Created", new UserIdPOJO(createdUserId));
+        return new ApiResponse<>("Success", user.getName()+" User Created", new UserId(createdUserId));
 
     }
 
     @GetMapping
-    public ResponseEntity<ResponseEntityPOJO<List<User>>> getAllUsers(@RequestParam(defaultValue = "0") int page,
-                                                                      @RequestParam(defaultValue = "5") int size,
-                                                                      Pageable pageable) {
+    public ResponseEntity<ApiResponse<List<User>>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "5") int size,
+                                                               Pageable pageable) {
         //start form here pagenation.
         List<User> userslist = userService.getAllUsers(page, size);
 
         if (!userslist.isEmpty()) {
-            return ResponseEntity.ok(new ResponseEntityPOJO<>("Success", "Found Users " + userslist.toArray().length, userslist));
+            return ResponseEntity.ok(new ApiResponse<>("Success", "Found Users " + userslist.toArray().length, userslist));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseEntityPOJO<>("Failure", "No User Found", null));
+                .body(new ApiResponse<>("Failure", "No User Found", null));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntityPOJO<UserIdPOJO> deleteUser(@PathVariable UUID id) {
+    public ApiResponse<UserId> deleteUser(@PathVariable UUID id) {
 
         UUID deleteUserId = userService.deleteUser(id);
 
-        return new ResponseEntityPOJO<>("Success", "User Deleted", new UserIdPOJO(deleteUserId));
+        return new ApiResponse<>("Success", "User Deleted", new UserId(deleteUserId));
 
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntityPOJO<User> updateUser(@RequestBody User user, @PathVariable UUID id) {
+    public ApiResponse<User> updateUser(@RequestBody User user, @PathVariable UUID id) {
 
         User updatedUserDetail = userService.updateUser(id, user);
 
-        return  new ResponseEntityPOJO<>("Success", "User Detail Updated", updatedUserDetail);
+        return  new ApiResponse<>("Success", "User Detail Updated", updatedUserDetail);
 
     }
 
     @PatchMapping("/{id}/activate")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntityPOJO<UserIdPOJO> activate(@PathVariable UUID id) {
+    public ApiResponse<UserId> activate(@PathVariable UUID id) {
 
         User user = userService.activateUser(id);
 
-        return new ResponseEntityPOJO<>("Success", "User:"+user.getName()+" Profile Activated", new UserIdPOJO(id));
+        return new ApiResponse<>("Success", "User:"+user.getName()+" Profile Activated", new UserId(id));
     }
 
     @PatchMapping("/{id}/deactivate")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntityPOJO<UserIdPOJO> deactivate(@PathVariable UUID id) {
+    public ApiResponse<UserId> deactivate(@PathVariable UUID id) {
 
         User user = userService.deactivateUser(id);
 
-        return new ResponseEntityPOJO<>("Success", user.getName()+" Profile Deactivated", new UserIdPOJO(id));
+        return new ApiResponse<>("Success", user.getName()+" Profile Deactivated", new UserId(id));
     }
 }
 

@@ -12,10 +12,8 @@ public class DevSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable() // Disables CSRF protection for dev profile
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Permits all requests in dev environment
+        http.csrf().disable() // Disables CSRF protection for dev profile
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll() // Permits all requests in dev environment
                 );
         return http.build();
     }

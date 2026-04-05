@@ -1,8 +1,13 @@
 package com.finance.dash_api.service;
 
+import com.finance.dash_api.DTO.UserDTO;
+import com.finance.dash_api.Helper.MapToDTO;
 import com.finance.dash_api.POJO.CustomException;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -13,29 +18,34 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MapToDTO mapToDTO;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, MapToDTO mapToDTO) {
         this.userRepository = userRepository;
+        this.mapToDTO = mapToDTO;
     }
 
-    public UUID createUser(User user) {
+    public UUID createUser(UserDTO userDTO) {
 
-        User newUser;
+        //check if user already exist
+//            try {
+//                userRepository.save(user);
+//            } catch (DataIntegrityViolationException e) {
+//                throw new CustomException("Email already exists", HttpStatus.CONFLICT);
+//            }
+        User user = mapToDTO.toUser(userDTO);
+        User newUser = userRepository.save(user);
 
-        try {
-            //check if user already exist
-            newUser = userRepository.save(user);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
         return newUser.getId();
     }
 
-    //need to fix pagination
-    public List<User> getAllUsers(int page, int size) {
-        return userRepository.findAll();
+    public Page<UserDTO> getAllUsers(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userRepository.findAll(pageable)
+                .map(mapToDTO::toDTO);
     }
 
     public UUID deleteUser(UUID id) {
@@ -44,81 +54,56 @@ public class UserService {
             throw new CustomException("Enter Valid User Id", HttpStatus.BAD_REQUEST);
 
         userRepository.findById(id)
-                .orElseThrow(() ->
-                        new CustomException("User not found", HttpStatus.NOT_FOUND));
-        try {
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
-            userRepository.deleteById(id);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        userRepository.deleteById(id);
 
         return id;
 
     }
 
-    public User updateUser(UUID id, User newUserDetail) {
+    public UserDTO updateUser(UUID id, UserDTO newUserDetail) {
 
         User user;
         User existingUserDetail = userRepository.findById(id).
                 orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
-        try {
-
-            if (newUserDetail.getPassword() != null && !(newUserDetail.getPassword().equals(existingUserDetail.getPassword()))) {
-                existingUserDetail.setPassword(newUserDetail.getPassword());
-            }
-            if (newUserDetail.getRole() != null && !(newUserDetail.getRole().equals(existingUserDetail.getRole()))) {
-                existingUserDetail.setRole(newUserDetail.getRole());
-            }
-            if (newUserDetail.isActive() != existingUserDetail.isActive()) {
-                existingUserDetail.setActive(newUserDetail.isActive());
-            }
-
-            user = userRepository.save(existingUserDetail);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (newUserDetail.getName() != null && !(newUserDetail.getName().equals(existingUserDetail.getName()))) {
+            existingUserDetail.setName(newUserDetail.getName());
+        }
+        if (newUserDetail.getRole() != null && !(newUserDetail.getEmail().equals(existingUserDetail.getEmail()))) {
+            existingUserDetail.setEmail(newUserDetail.getEmail());
+        }
+        if (newUserDetail.isActive() != existingUserDetail.isActive()) {
+            existingUserDetail.setActive(newUserDetail.isActive());
         }
 
-        return user;
+        user = userRepository.save(existingUserDetail);
+
+
+        return mapToDTO.toDTO(user);
     }
 
-    public User activateUser(UUID id) {
+    public UserDTO activateUser(UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
         user.setActive(true);
 
-        try {
+        userRepository.save(user);
 
-            userRepository.save(user);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return user;
+        return mapToDTO.toDTO(userRepository.save(user));
     }
 
-    public User deactivateUser(UUID id) {
+    public UserDTO deactivateUser(UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
         user.setActive(false);
 
-        try {
-
-            userRepository.save(user);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return user;
+        return mapToDTO.toDTO(userRepository.save(user));
     }
 
 }

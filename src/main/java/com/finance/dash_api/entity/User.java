@@ -22,28 +22,15 @@ public class User {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @NotBlank
-    @Size(min= 2, max = 30)
     private String name;
 
-    @NotBlank
-    @Email
+    @Column(unique = true)
     private String email;
 
-    @Size(min = 8, max = 20)
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "Password must be strong " +
-                    "At least 8 characters " +
-                    "At least 1 lowercase " +
-                    "At least 1 uppercase " +
-                    "At least 1 digit " +
-                    "At least 1 special character"
-    )
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
 
     private boolean active = true;
 

@@ -1,15 +1,19 @@
 package com.finance.dash_api.service;
 
+import com.finance.dash_api.DTO.RecordDTO;
+import com.finance.dash_api.Helper.MapToDTO;
 import com.finance.dash_api.POJO.CustomException;
 import com.finance.dash_api.entity.*;
 import com.finance.dash_api.entity.Record;
 import com.finance.dash_api.repository.RecordRepository;
 import com.finance.dash_api.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,32 +21,27 @@ public class RecordService {
 
     private final RecordRepository recordRepo;
     private final UserRepository userRepo;
+    private final MapToDTO mapToDTO;
 
-    public RecordService(RecordRepository recordRepo, UserRepository userRepo) {
+    public RecordService(RecordRepository recordRepo, UserRepository userRepo, MapToDTO mapToDTO) {
         this.recordRepo = recordRepo;
         this.userRepo = userRepo;
+        this.mapToDTO = mapToDTO;
     }
 
-    public UUID createRecord(Record record, UUID userId) {
+    public UUID createRecord(RecordDTO recordDTO, UUID userId) {
 
-        Record createdRecord;
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+        Record record, createdRecord;
+        User user = userRepo.findById(userId).orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
-        record.setUser(user);
+        record = mapToDTO.toRecord(recordDTO, user);
 
-        try {
-
-            createdRecord = recordRepo.save(record);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        createdRecord = recordRepo.save(record);
 
         return createdRecord.getId();
     }
 
-    public Record updateRecord(UUID recordId, Record newRecordDetail) {
+    public RecordDTO updateRecord(UUID recordId, RecordDTO newRecordDetail) {
 
         Record record;
         Record existingRecordDetail = recordRepo.findById(recordId)
@@ -61,56 +60,56 @@ public class RecordService {
             existingRecordDetail.setNotes(newRecordDetail.getNotes());
         }
 
-        try {
-            record = recordRepo.save(existingRecordDetail);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return record;
+        record = recordRepo.save(existingRecordDetail);
+        return mapToDTO.toRecordDTO(record);
     }
 
     public Record deleteRecord(UUID recordId) {
 
-        Record record = recordRepo.findById(recordId)
-                .orElseThrow(() -> new CustomException("Record not found", HttpStatus.NOT_FOUND));
+        Record record = recordRepo.findById(recordId).orElseThrow(() -> new CustomException("Record not found", HttpStatus.NOT_FOUND));
 
-        try {
-
-            recordRepo.deleteById(recordId);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        recordRepo.deleteById(recordId);
 
         return record;
     }
 
-    public List<Record> filterRecords(RecordType type, String category, LocalDateTime start, LocalDateTime end) {
+    public Page<RecordDTO> filterRecords(String type, String category, LocalDateTime start, LocalDateTime end,
+                                         int pageNum,
+                                         int size) {
 
-        List<Record> records ;
+        RecordType recordType = null;
 
-        try {
-
-            if (type != null && category != null) {
-                records = recordRepo.findByTypeAndCategory(type, category);
-            } else if (type != null) {
-                records = recordRepo.findByType(type);
-            } else if (category != null) {
-                records = recordRepo.findByCategory(category);
-            } else if (start != null && end != null) {
-                records = recordRepo.findByCreationDateBetween(start, end);
-            } else {
-                records = recordRepo.findAll();
+        if (type != null) {
+            try {
+                recordType = RecordType.valueOf(type.toUpperCase());
+            } catch (Exception e) {
+                throw new CustomException("Invalid Record Type", HttpStatus.BAD_REQUEST);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
-        if (records.isEmpty()){
-            throw new CustomException("No Record Found",HttpStatus.NOT_FOUND);
+        Pageable pageable = PageRequest.of(pageNum, size);
+        Page<Record> recordPage;
+
+        if (recordType != null && category != null) {
+            recordPage = recordRepo.findByTypeAndCategory(recordType, category, pageable);
+
+        } else if (recordType != null) {
+            recordPage = recordRepo.findByType(recordType, pageable);
+
+        } else if (category != null) {
+            recordPage = recordRepo.findByCategory(category, pageable);
+
+        } else if (start != null && end != null) {
+            recordPage = recordRepo.findByCreationDateBetween(start, end, pageable);
+
+        } else {
+            recordPage = recordRepo.findAll(pageable);
         }
 
-        return records;
+        if (recordPage.isEmpty()) {
+            throw new CustomException("No Record Found", HttpStatus.NOT_FOUND);
+        }
+
+        return recordPage.map(mapToDTO::toRecordDTO);
     }
 }

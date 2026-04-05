@@ -1,6 +1,6 @@
 package com.finance.dash_api.entity;
 
-public enum Role {
+public enum UserRole {
     ADMIN,
     ANALYST,
     VIEWER

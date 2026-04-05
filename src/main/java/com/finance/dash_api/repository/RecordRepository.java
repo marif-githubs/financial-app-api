@@ -3,19 +3,24 @@ package com.finance.dash_api.repository;
 
 import com.finance.dash_api.entity.Record;
 import com.finance.dash_api.entity.RecordType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public interface RecordRepository extends JpaRepository<Record, UUID> {
 
-    List<Record> findByType(RecordType type);
+    Page<Record> findByType(RecordType type, Pageable pageable);
 
-    List<Record> findByCategory(String category);
+    Page<Record> findByCategory(String category, Pageable pageable);
 
-    List<Record> findByCreationDateBetween(LocalDateTime start, LocalDateTime end);
+    Page<Record> findByCreationDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    List<Record> findByTypeAndCategory(RecordType type, String category);
+    Page<Record> findByTypeAndCategory(RecordType type, String category, Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(r.amount), 0) FROM Record r WHERE r.type = :type")
+    Double getTotalByType(RecordType type);
 }

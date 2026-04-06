@@ -1,5 +1,35 @@
 📘 Finance Dashboard API Documentation
 
+🚀 Setup & Run Guide
+📋 Prerequisites
+
+Make sure the following tools are installed:
+🧰 Required Tools
+Java 17
+Maven (3.8+)
+IntelliJ IDEA (Community Edition) Recommended
+
+📦 Dependencies Used
+Spring Boot (Web, JPA, Security)
+H2 Database (in-memory)
+JWT (jjwt)
+Lombok
+Validation (Jakarta Validation)
+Swagger (springdoc-openapi)
+
+📥 Clone Repository
+git clone https://github.com/marif-githubs/financial-app-api.git
+cd finance-dashboard
+
+▶️ Run the Application
+Option 1: Using Maven
+mvn spring-boot:run
+Option 2: From IDE
+Open project in IntelliJ
+Locate main class:
+FinanceDashboardApplication.java
+Click Run ▶
+
 API Flow
 Login → Get token → Append in Bearer → Perform actions 
 

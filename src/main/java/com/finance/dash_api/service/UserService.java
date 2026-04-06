@@ -28,6 +28,9 @@ public class UserService {
     public UUID createUser(UserDTO userDTO) {
 
         //check if user already exist
+//        if (!recordRepo.existsById(id)) {
+//            throw new RuntimeException("Record not found");
+//        }
 //            try {
 //                userRepository.save(user);
 //            } catch (DataIntegrityViolationException e) {

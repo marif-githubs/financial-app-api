@@ -23,7 +23,7 @@ class GlobalExceptionHandler {
                 .orElse("Validation error");
 
         return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("Failure2", errorMsg, null));
+                .body(new ApiResponse<>("Failed", errorMsg, null));
     }
 
     @ExceptionHandler(CustomException.class)
@@ -42,6 +42,6 @@ class GlobalExceptionHandler {
 //        }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>("Failure1", message, null));
+                .body(new ApiResponse<>("Failed", message, null));
     }
 }

@@ -4,14 +4,13 @@ import com.finance.dash_api.DTO.RecordDTO;
 import com.finance.dash_api.POJO.ApiResponse;
 import com.finance.dash_api.POJO.RecordId;
 import com.finance.dash_api.entity.Record;
-import com.finance.dash_api.entity.RecordType;
 import com.finance.dash_api.service.RecordService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +24,7 @@ public class RecordController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<RecordId> create(@RequestBody RecordDTO record,
                                         @RequestParam UUID userId) {
@@ -36,6 +36,7 @@ public class RecordController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST', 'VIEWER')")
     public ApiResponse<Page<RecordDTO>> getAll(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String category,
@@ -53,21 +54,23 @@ public class RecordController {
         return new ApiResponse<>("Success","List of records found. Page:"+pageNum+" size:"+size, page);
     }
 
-    @PutMapping("/{recordId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ApiResponse<RecordId> update(@PathVariable UUID recordId,
-                                        @RequestBody RecordDTO record) {
-        RecordDTO updatedRecord = service.updateRecord(recordId, record);
-
-        return new ApiResponse<>("Success", "Record updated", new RecordId(updatedRecord.getUserId(), updatedRecord.getId()));
-    }
-
     @DeleteMapping("/{recordId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<RecordId> delete(@PathVariable UUID recordId) {
 
         Record deletedRecord = service.deleteRecord(recordId);
 
         return new ApiResponse<>("Success", "Record Deleted", new RecordId( deletedRecord.getUser().getId(), deletedRecord.getId()));
+    }
+
+    @PutMapping("/{recordId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VIEWER')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResponse<RecordId> update(@PathVariable UUID recordId,
+                                        @RequestBody RecordDTO record) {
+        RecordDTO updatedRecord = service.updateRecord(recordId, record);
+
+        return new ApiResponse<>("Success", "Record updated", new RecordId(updatedRecord.getUserId(), updatedRecord.getId()));
     }
 }

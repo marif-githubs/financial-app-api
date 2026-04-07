@@ -30,6 +30,10 @@ Locate main class:
 FinanceDashboardApplication.java
 Click Run ▶
 
+Go to Swagger-ui
+http://localhost:8080/swagger-ui/index.html
+Swagger UI supports JWT authentication via the Authorize button using Bearer tokens.
+
 API Flow
 Login → Get token → Append in Bearer → Perform actions 
 
@@ -37,8 +41,13 @@ Login → Get token → Append in Bearer → Perform actions
 http://localhost:8080
 
 🔐 Authentication
-Login
-Endpoint
+Sample Credentials for Login
+Role	   |Email	          |Password
+Admin	   |admin@test.com  |	1234@Admin
+Analyst	 |analyst@test.com|	1234@Analyst
+Viewer	 |viewer@test.com	| 1234@Viewer
+
+Login Endpoint
 POST /auth/login
 
 cURL for admin
@@ -187,6 +196,7 @@ Features
 -Aggregation queries handled at h2-DB level for performance
 -DTOs used to separate API layer from persistence
 -Clean layered architecture (Controller → Service → Repository)
+
 
 Swagger-ui url
 http://localhost:8080/swagger-ui/index.html

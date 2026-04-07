@@ -1,17 +1,18 @@
 package com.finance.dash_api.service;
 
-import com.finance.dash_api.DTO.UserDTO;
+import com.finance.dash_api.DTO.reqUserDto;
+import com.finance.dash_api.DTO.resUserDto;
 import com.finance.dash_api.Helper.MapToDTO;
 import com.finance.dash_api.POJO.CustomException;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,25 +26,20 @@ public class UserService {
         this.mapToDTO = mapToDTO;
     }
 
-    public UUID createUser(UserDTO userDTO) {
+    public UUID createUser(reqUserDto reqUserDto) {
 
-        //check if user already exist
-//        if (!recordRepo.existsById(id)) {
-//            throw new RuntimeException("Record not found");
-//        }
-//            try {
-//                userRepository.save(user);
-//            } catch (DataIntegrityViolationException e) {
-//                throw new CustomException("Email already exists", HttpStatus.CONFLICT);
-//            }
-        User user = mapToDTO.toUser(userDTO);
-        User newUser = userRepository.save(user);
-
+        User newUser;
+        User user = mapToDTO.toUser(reqUserDto);
+        try {
+            newUser = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException("Email already exists", HttpStatus.CONFLICT);
+        }
 
         return newUser.getId();
     }
 
-    public Page<UserDTO> getAllUsers(int page, int size) {
+    public Page<resUserDto> getAllUsers(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -65,7 +61,7 @@ public class UserService {
 
     }
 
-    public UserDTO updateUser(UUID id, UserDTO newUserDetail) {
+    public resUserDto updateUser(UUID id, reqUserDto newUserDetail) {
 
         User user;
         User existingUserDetail = userRepository.findById(id).
@@ -87,7 +83,7 @@ public class UserService {
         return mapToDTO.toDTO(user);
     }
 
-    public UserDTO activateUser(UUID id) {
+    public resUserDto activateUser(UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
@@ -99,7 +95,7 @@ public class UserService {
         return mapToDTO.toDTO(userRepository.save(user));
     }
 
-    public UserDTO deactivateUser(UUID id) {
+    public resUserDto deactivateUser(UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));

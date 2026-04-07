@@ -1,42 +1,30 @@
 package com.finance.dash_api.controller;
 
-import com.finance.dash_api.security.JWTUtility;
+import com.finance.dash_api.DTO.LoginDTO;
+import com.finance.dash_api.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@Tag(name = "Login Api", description = "Login and get Access Token. (please get default admin credentials for github readme)")
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final JWTUtility jwtUtil;
+    private final AuthService authService;
 
-    public AuthController(JWTUtility jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public AuthController( AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> request) throws Exception {
+    public Map<String, String> login(@Valid @RequestBody LoginDTO cridentials) throws Exception {
 
-        String username = request.get("username");
-        String password = request.get("password");
-
-        // 🔥 TEMP: Hardcoded users (fast approach)
-        if ("admin".equals(username) && "admin123".equals(password)) {
-            String token = jwtUtil.generateToken(username, "ADMIN");
-            return Map.of("token", token);
-        }
-
-        if ("analyst".equals(username) && "analyst123".equals(password)) {
-            String token = jwtUtil.generateToken(username, "ANALYST");
-            return Map.of("token", token);
-        }
-
-        if ("viewer".equals(username) && "viewer123".equals(password)) {
-            String token = jwtUtil.generateToken(username, "VIEWER");
-            return Map.of("token", token);
-        }
-
-        throw new Exception("Invalid credentials");
+        String token = authService.getUser(cridentials);
+        return Map.of("token", token);
     }
+
+
 }

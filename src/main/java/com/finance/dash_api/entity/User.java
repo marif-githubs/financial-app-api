@@ -2,6 +2,7 @@ package com.finance.dash_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -23,6 +24,7 @@ public class User {
 
     private String name;
 
+    @Email
     @Column(unique = true)
     private String email;
 
@@ -35,4 +37,13 @@ public class User {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate = LocalDateTime.now();
+
+    public User(String name, String email, String password, UserRole role, boolean active){
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.active = active;
+    }
+
 }

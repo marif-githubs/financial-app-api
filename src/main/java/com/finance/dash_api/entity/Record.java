@@ -3,8 +3,12 @@ package com.finance.dash_api.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.finance.dash_api.DTO.RecordDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
@@ -29,7 +33,6 @@ public class Record {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-
     private Double amount;
 
     @Enumerated(EnumType.STRING)
@@ -46,4 +49,13 @@ public class Record {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Record (Double amount, RecordType type, String category, String notes, User user){
+        this.amount = amount;
+        this.type = type;
+        this.category = category;
+        this.notes = notes;
+        this.user  = user;
+    }
+
 }

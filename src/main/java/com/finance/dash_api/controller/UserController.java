@@ -1,6 +1,7 @@
 package com.finance.dash_api.controller;
 
-import com.finance.dash_api.DTO.UserDTO;
+import com.finance.dash_api.DTO.reqUserDto;
+import com.finance.dash_api.DTO.resUserDto;
 import com.finance.dash_api.POJO.UserId;
 import com.finance.dash_api.service.UserService;
 import com.finance.dash_api.POJO.ApiResponse;
@@ -27,20 +28,20 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ApiResponse<UserId> createUser(@Valid @RequestBody UserDTO user) {
+    public ApiResponse<UserId> createUser(@Valid @RequestBody reqUserDto reqUserDto) {
 
-        UUID createdUserId = userService.createUser(user);
+        UUID createdUserId = userService.createUser(reqUserDto);
 
-        return new ApiResponse<>("Success", user.getName() + " User Created", new UserId(createdUserId));
+        return new ApiResponse<>("Success", reqUserDto.getName() + " User Created", new UserId(createdUserId));
 
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
-    public ApiResponse<Page<UserDTO>> getUsers(@RequestParam(required = false, defaultValue = "0") int pageNum, @RequestParam(required = false, defaultValue =
+    public ApiResponse<Page<resUserDto>> getUsers(@RequestParam(required = false, defaultValue = "0") int pageNum, @RequestParam(required = false, defaultValue =
             "10") int size) {
 
-        Page<UserDTO> page = userService.getAllUsers(pageNum, size);
+        Page<resUserDto> page = userService.getAllUsers(pageNum, size);
 
         return new ApiResponse<>("Success", "Total Users Found:"+page.getTotalElements()+" page:" + pageNum + " size:" + size, page);
     }
@@ -59,9 +60,9 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
-    public ApiResponse<UserDTO> updateUser(@RequestBody UserDTO user, @PathVariable UUID id) {
+    public ApiResponse<resUserDto> updateUser(@RequestBody reqUserDto user, @PathVariable UUID id) {
 
-        UserDTO updatedUserDetail = userService.updateUser(id, user);
+        resUserDto updatedUserDetail = userService.updateUser(id, user);
 
         return new ApiResponse<>("Success", "User Detail Updated", updatedUserDetail);
 
@@ -72,7 +73,7 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.OK)
     public ApiResponse<UserId> activate(@PathVariable UUID id) {
 
-        UserDTO user = userService.activateUser(id);
+        resUserDto user = userService.activateUser(id);
 
         return new ApiResponse<>("Success", "User:" + user.getName() + " Profile Activated", new UserId(id));
     }
@@ -82,7 +83,7 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.OK)
     public ApiResponse<UserId> deactivate(@PathVariable UUID id) {
 
-        UserDTO user = userService.deactivateUser(id);
+        resUserDto user = userService.deactivateUser(id);
 
         return new ApiResponse<>("Success", user.getName() + " Profile Deactivated", new UserId(id));
     }

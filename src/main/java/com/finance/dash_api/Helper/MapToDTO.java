@@ -1,7 +1,8 @@
 package com.finance.dash_api.Helper;
 
 import com.finance.dash_api.DTO.RecordDTO;
-import com.finance.dash_api.DTO.UserDTO;
+import com.finance.dash_api.DTO.reqUserDto;
+import com.finance.dash_api.DTO.resUserDto;
 import com.finance.dash_api.entity.User;
 import com.finance.dash_api.entity.Record;
 import org.springframework.stereotype.Component;
@@ -9,24 +10,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class MapToDTO {
 
-    public UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(),
+    public resUserDto toDTO(User user) {
+        return new resUserDto(user.getId().toString(),
                 user.getName(),
                 user.getEmail(),
-                "********",
-                user.getRole(),
+                user.getRole().name(),
                 user.isActive(),
                 user.getCreationDate());
     }
 
-    public User toUser(UserDTO user){
-        return new User(user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getRole(),
-                user.isActive(),
-                user.getCreationDate());
+    public User toUser(reqUserDto reqUserDto){
+        return new User(reqUserDto.getName(),
+                reqUserDto.getEmail(),
+                reqUserDto.getPassword(),
+                reqUserDto.getRole(),
+                reqUserDto.isActive());
     }
 
     public RecordDTO toRecordDTO(Record record) {
@@ -42,11 +40,9 @@ public class MapToDTO {
     }
 
     public Record toRecord(RecordDTO recordDTO, User user) {
-        return new Record(recordDTO.getId(),
-                recordDTO.getAmount(),
+        return new Record(recordDTO.getAmount(),
                 recordDTO.getType(),
                 recordDTO.getCategory(),
-                recordDTO.getCreationDate(),
                 recordDTO.getNotes(),
                 user);
     }

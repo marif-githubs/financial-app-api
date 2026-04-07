@@ -8,23 +8,20 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class UserDTO {
-
-    private UUID id;
+public class reqUserDto {
 
     @NotBlank
-    @Size(min= 2, max = 30)
+    @Size(min = 2, max = 30)
     private String name;
 
-    @Email
     @NotBlank
+    @Email(message = "Email should be in valid form")
     private String email;
 
-    @Size(min = 8, max = 20)
+    @Size(min = 8, max = 40)
     @Pattern(
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
             message = "Password must be strong " +
@@ -38,7 +35,5 @@ public class UserDTO {
     private UserRole role;
 
     private boolean active;
-
-    private LocalDateTime creationDate;
 
 }

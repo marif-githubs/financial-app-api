@@ -7,7 +7,7 @@
 * Maven (3.8+)
 * IntelliJ IDEA (Community Edition) Recommended
 
-###📦 Dependencies Used
+### 📦 Dependencies Used
 * Spring Boot (Web, JPA, Security)
 * H2 Database (in-memory)
 * JWT (jwt)
@@ -15,7 +15,7 @@
 * Validation (Jakarta Validation)
 * Swagger (springdoc-openapi)
 
-###📥 Clone Repository
+### 📥 Clone Repository
 ```bash
 git clone https://github.com/marif-githubs/financial-app-api.git
 cd finance-dashboard 
@@ -243,7 +243,7 @@ Expected Response
 http://localhost:8080/swagger-ui/index.html
 ```
 
-postman import json files
+postman export
 ```bash
 finance app postman export
     |-dash api.postman_collection

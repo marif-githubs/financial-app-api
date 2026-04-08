@@ -1,8 +1,8 @@
-#📘 Finance Dashboard API Documentation
+# 📘 Finance Dashboard API Documentation
 
-##🚀 Setup & Run Guide 
+## 🚀 Setup & Run Guide 
 **Make sure the following tools are installed:**      
-###🧰 Required Tools
+### 🧰 Required Tools
 * Java 17
 * Maven (3.8+)
 * IntelliJ IDEA (Community Edition) Recommended
@@ -31,7 +31,9 @@ FinanceDashboardApplication.java
 Click Run ▶
 
 ### Go to Swagger-ui
-```http://localhost:8080/swagger-ui/index.html```
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
 Swagger UI supports JWT authentication via the Authorize button using Bearer tokens.
 
 ### API Flow
@@ -43,10 +45,12 @@ Login → Get token → Append in Bearer → Perform actions
 🔐 Authentication
 Sample Credentials for Login
 ```
-Role	   |Email	          |Password
-Admin	   |admin@test.com  |	1234@Admin
-Analyst	 |analyst@test.com|	1234@Analyst
-Viewer	 |viewer@test.com	| 1234@Viewer```
+----------------------------------------------
+|Role	      |Email	          |Password      |
+|Admin	    |admin@test.com   |	1234@Admin   |
+|Analyst	  |analyst@test.com |	1234@Analyst |
+|Viewer	    |viewer@test.com	| 1234@Viewer  |
+----------------------------------------------
 ```
 Login Endpoint
 ```POST /auth/login```
@@ -89,7 +93,7 @@ Response
 ### 🔑 Use Token in Requests
 Authorization: Bearer <your_token>
 
-###👤 User APIs (Admin Only)
+### 👤 User APIs (Admin Only)
 Create User
 Endpoint
 ```POST /users```
@@ -218,8 +222,8 @@ Expected Response
   "netBalance": 6000
 }
 ```
-| API            | Viewer | Analyst | Admin |
-| -------------- | ------ | ------- | ----- |
+| API            | Viewer  | Analyst   | Admin |
+| -------------- | --------| --------- | ----- |
 | View Records   | ✅      | ✅       | ✅     |
 | Create Records | ❌      | ❌       | ✅     |
 | Dashboard      | ❌      | ✅       | ✅     |
@@ -246,7 +250,7 @@ finance app postman export
     |-finance app auth api.postman_collection
     |-financial record api.postman_collection
     |-user api.postman_collection
-    ```
+```
 
 h2-db console
 ```bash

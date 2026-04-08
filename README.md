@@ -1,9 +1,7 @@
 #📘 Finance Dashboard API Documentation
 
-##🚀 Setup & Run Guide
-###📋 Prerequisites
-
-**Make sure the following tools are installed:**
+##🚀 Setup & Run Guide 
+**Make sure the following tools are installed:**      
 ###🧰 Required Tools
 * Java 17
 * Maven (3.8+)
@@ -18,8 +16,10 @@
 * Swagger (springdoc-openapi)
 
 ###📥 Clone Repository
-``` git clone https://github.com/marif-githubs/financial-app-api.git
-cd finance-dashboard ```
+```bash
+git clone https://github.com/marif-githubs/financial-app-api.git
+cd finance-dashboard 
+```
 
 ### ▶️ Run the Application
 Option 1: Using Maven
@@ -31,9 +31,8 @@ FinanceDashboardApplication.java
 Click Run ▶
 
 ### Go to Swagger-ui
-```http://localhost:8080/swagger-ui/index.html
+```http://localhost:8080/swagger-ui/index.html```
 Swagger UI supports JWT authentication via the Authorize button using Bearer tokens.
-```
 
 ### API Flow
 Login → Get token → Append in Bearer → Perform actions 
@@ -43,37 +42,44 @@ Login → Get token → Append in Bearer → Perform actions
 
 🔐 Authentication
 Sample Credentials for Login
-```Role	   |Email	          |Password
+```
+Role	   |Email	          |Password
 Admin	   |admin@test.com  |	1234@Admin
 Analyst	 |analyst@test.com|	1234@Analyst
 Viewer	 |viewer@test.com	| 1234@Viewer```
-
+```
 Login Endpoint
 ```POST /auth/login```
 
 cURL for admin
-```curl -X POST http://localhost:8080/auth/login \
+```bash
+curl -X POST http://localhost:8080/auth/login \
 -H "Content-Type: application/json" \
 -d '{
   "username": "admin",
   "password": "admin123"
-}'```
+}'
+```
 
 cURL for analyst
-```curl -X POST http://localhost:8080/auth/login \
+```bash
+curl -X POST http://localhost:8080/auth/login \
 -H "Content-Type: application/json" \
 -d '{
   "username": "analyst",
   "password": "analyst123"
-}'```
+}'
+```
 
 cURL for viewer
-```curl -X POST http://localhost:8080/auth/login \
+```bash
+curl -X POST http://localhost:8080/auth/login \
 -H "Content-Type: application/json" \
 -d '{
   "username": "viewer",
   "password": "viewer123"
-}'```
+}'
+```
 
 Response
 {
@@ -86,9 +92,10 @@ Authorization: Bearer <your_token>
 ###👤 User APIs (Admin Only)
 Create User
 Endpoint
-POST /users
+```POST /users```
 cURL
-```curl -X POST http://localhost:8080/users \
+```bash
+curl -X POST http://localhost:8080/users \
 -H "Authorization: Bearer <token>" \
 -H "Content-Type: application/json" \
 -d '{
@@ -97,41 +104,52 @@ cURL
   "password": "gshtr@A1sdgd",
   "role": "ANALYST",
   "active": "false"
-}'```
+}'
+```
 
 Get All Users
-```curl -X GET http://localhost:8080/users \
--H "Authorization: Bearer <token>"```
+```bash
+curl -X GET http://localhost:8080/users \
+-H "Authorization: Bearer <token>"
+```
 
 Update User
-```curl -X PUT http://localhost:8080/users/<userId> \
+```bash
+curl -X PUT http://localhost:8080/users/<userId> \
 -H "Authorization: Bearer <token>" \
 -H "Content-Type: application/json" \
 -d '{
   "name": "Updated Name",
   "email": "updated@email.com",
   "role": "ADMIN"
-}'```
+}'
+```
 
 Delete User
-```curl -X DELETE http://localhost:8080/users/1 \
--H "Authorization: Bearer <token>"```
+```bash
+curl -X DELETE http://localhost:8080/users/1 \
+-H "Authorization: Bearer <token>"
+```
 
 Activate User
-```curl -X PATCH http://localhost:8080/users/1/activate \
--H "Authorization: Bearer <token>"```
+```bash
+curl -X PATCH http://localhost:8080/users/1/activate \
+-H "Authorization: Bearer <token>"
+```
 
 Deactivate User
-```curl -X PATCH http://localhost:8080/users/1/deactivate \
--H "Authorization: Bearer <token>"```
-
+```bash
+curl -X PATCH http://localhost:8080/users/1/deactivate \
+-H "Authorization: Bearer <token>"
+```
 
 ### 💰 Financial Records APIs
 Create Record (Admin Only)
 Endpoint
 ```POST /records?userId=<userId>```
 cURL
-```curl -X POST "http://localhost:8080/records?userId=<userId return by "POST http://localhost:8080/users" api>" \
+```bash
+curl -X POST "http://localhost:8080/records?userId=<userId return by "POST http://localhost:8080/users" api>" \
 -H "Authorization: Bearer <token>" \
 -H "Content-Type: application/json" \
 -d '{
@@ -139,44 +157,60 @@ cURL
   "type": "INCOME",
   "category": "Salary",
   "notes": "Monthly salary"
-}'```
+}'
+```
 
 Get Records (All Roles)
 Basic
-```curl -X GET http://localhost:8080/records \
--H "Authorization: Bearer <token>"```
+```bash
+curl -X GET http://localhost:8080/records \
+-H "Authorization: Bearer <token>"
+```
 
 Filtering Examples
 By Type
-```curl "http://localhost:8080/records?type=INCOME" \
--H "Authorization: Bearer <token>"```
+```bash
+curl "http://localhost:8080/records?type=INCOME" \
+-H "Authorization: Bearer <token>"
+```
 By Category
-```curl "http://localhost:8080/records?category=Food" \
--H "Authorization: Bearer <token>"```
+```bash
+curl "http://localhost:8080/records?category=Food" \
+-H "Authorization: Bearer <token>"
+```
 By Date Range
-```curl "http://localhost:8080/records?startDate=2026-04-01&endDate=2026-04-30" \
--H "Authorization: Bearer <token>"```
+```bash
+curl "http://localhost:8080/records?startDate=2026-04-01&endDate=2026-04-30" \
+-H "Authorization: Bearer <token>"
+```
 
 Update Record
-```curl -X PUT http://localhost:8080/records/<recordId> \
+```bash
+curl -X PUT http://localhost:8080/records/<recordId> \
 -H "Authorization: Bearer <token>" \
 -H "Content-Type: application/json" \
 -d '{
   "amount": 6000,
   "category": "Salary",
   "notes": "Updated salary"
-}'```
+}'
+```
+
 Delete Record
-```curl -X DELETE http://localhost:8080/records/<recordId> \
--H "Authorization: Bearer <token>"```
+```bash
+curl -X DELETE http://localhost:8080/records/<recordId> \
+-H "Authorization: Bearer <token>"
+```
 
 ### 📊 Dashboard APIs
 Summary (Admin + Analyst)
 Endpoint
 ```GET /dashboard/summary```
 cURL
-```curl -X GET http://localhost:8080/dashboard/summary \
--H "Authorization: Bearer <token>"```
+```bash 
+curl -X GET http://localhost:8080/dashboard/summary \
+-H "Authorization: Bearer <token>"
+```
 Expected Response
 {
   "totalIncome": 10000,
@@ -201,7 +235,9 @@ Expected Response
 
 
 ## Swagger-ui url
-```http://localhost:8080/swagger-ui/index.html```
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
 
 postman import json files
 ```bash
@@ -213,7 +249,9 @@ finance app postman export
     ```
 
 h2-db console
-```http://localhost:8080/h2-console```
+```bash
+http://localhost:8080/h2-console
+```
 Driver Class:	org.h2.Driver
 JDBC URL:	jdbc:h2:mem:testdb
 User Name:	sa

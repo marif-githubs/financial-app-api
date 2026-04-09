@@ -22,6 +22,7 @@ cd finance-dashboard
 ```
 
 ### ▶️ Run the Application
+```bash
 Option 1: Using Maven
 mvn spring-boot:run
 Option 2: From IDE
@@ -29,9 +30,13 @@ Open project in IntelliJ
 Locate main class:
 FinanceDashboardApplication.java
 Click Run ▶
+```
 
 ### Go to Swagger-ui
 ```bash
+**live url**
+http://65.0.92.142:8080/swagger-ui/index.html
+local url
 http://localhost:8080/swagger-ui/index.html
 ```
 Swagger UI supports JWT authentication via the Authorize button using Bearer tokens.
@@ -231,6 +236,7 @@ Expected Response
 ```
 
 ## Features
+* hosted on aws ec2 (live)
 * JWT used for stateless authentication
 * Role-based access enforced via Spring Security
 * Aggregation queries handled at h2-DB level for performance 
